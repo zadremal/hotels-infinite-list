@@ -1,0 +1,21 @@
+.header {
+  background: #092a5e;
+  color: white;
+  font-size: 1.2em;
+  text-transform: uppercase;
+}
+
+.hotel {
+  &:nth-child(2n + 1) {
+    background-color: #eee;
+  }
+}
+
+.listElement {
+  padding: 20px;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  &:last-child {
+    border: none;
+  }
+}
