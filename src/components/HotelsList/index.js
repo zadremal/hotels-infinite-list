@@ -5,6 +5,7 @@ import axios from "axios";
 import getHotelsData from "../../mocks/hotelsDataMock";
 import mockAPIRequest from "../../mocks/apiMock";
 import styles from "./list.module.scss";
+import { Spin } from "antd";
 
 const getHotelsEndpoint = process.env.REACT_APP_API_GET_HOTELS;
 const hotelsMockData = getHotelsData();
@@ -64,15 +65,21 @@ class List extends Component {
   };
 
   renderFetchingIndicator = () => {
-    return <div>{this.state.isFetching && <span> Loading </span>}</div>;
+    return (
+      this.state.isFetching && (
+        <div className={styles.fetchingIndicator}>
+          <Spin />
+        </div>
+      )
+    );
   };
 
   renderFetchedAmount = () => {
     return (
       this.state.total && (
-        <span>
-          {this.state.hotels.length} / {this.state.total}
-        </span>
+        <div className={styles.totalAmount}>
+          show: {this.state.hotels.length} / {this.state.total}
+        </div>
       )
     );
   };
@@ -112,8 +119,8 @@ class List extends Component {
       <div>
         {this.renderListHeader()}
         {this.renderHotels()}
-        {this.renderFetchingIndicator()}
         {this.renderFetchedAmount()}
+        {this.renderFetchingIndicator()}
       </div>
     );
   }
