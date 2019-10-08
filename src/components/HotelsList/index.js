@@ -41,7 +41,6 @@ class HotelsList extends Component {
       this.setState(
         {
           nextHotelIndex: 0,
-          hotels: [],
           total: 0
         },
         () => this.getHotelsData()
@@ -63,7 +62,10 @@ class HotelsList extends Component {
         .then(data =>
           this.setState(
             prevState => ({
-              hotels: [...prevState.hotels, ...data.hotels],
+              hotels:
+                prevState.nextHotelIndex === 0
+                  ? data.hotels
+                  : [...prevState.hotels, ...data.hotels],
               nextHotelIndex: data.nextHotelIndex,
               isFetching: false,
               total: data.total
