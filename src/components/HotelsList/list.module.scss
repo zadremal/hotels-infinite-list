@@ -1,4 +1,5 @@
 .header {
+  display: flex;
   background: #092a5e;
   color: white;
   font-size: 1.2em;
@@ -6,12 +7,14 @@
 }
 
 .hotel {
+  display: flex;
   &:nth-child(2n + 1) {
     background-color: #eee;
   }
 }
 
 .listElement {
+  flex-basis: 25%;
   padding: 20px;
   text-align: center;
   border-right: 1px solid #ddd;

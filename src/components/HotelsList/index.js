@@ -1,0 +1,78 @@
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import axios from "axios";
+
+import getHotelsData from "../../mocks/hotelsDataMock";
+import mockAPIRequest from "../../mocks/apiMock";
+import styles from "./list.module.scss";
+
+const getHotelsEndpoint = process.env.REACT_APP_API_GET_HOTELS;
+const hotelsMockData = getHotelsData();
+mockAPIRequest(getHotelsEndpoint, hotelsMockData);
+
+class List extends Component {
+  state = {
+    hotels: ""
+  };
+
+  renderListElement = element => (
+    <div className={styles.listElement} key={element}>
+      {element}
+    </div>
+  );
+
+  componentDidMount() {
+    axios
+      .get(getHotelsEndpoint, { params: { first: 0, size: 10 } })
+      .then(response => response.status === 200 && response.data)
+      .then(data => this.setState({ hotels: data.hotels }));
+  }
+
+  renderListHeader = () => {
+    return (
+      <div className={styles.header}>
+        {Object.keys(this.state.hotels && this.state.hotels[0]).map(title => {
+          return this.renderListElement(title);
+        })}
+      </div>
+    );
+  };
+
+  renderHotels = () => {
+    return (
+      this.state.hotels &&
+      this.state.hotels.map(hotel => {
+        return (
+          <div className={styles.hotel} spacing={0} key={hotel.id}>
+            {Object.values(hotel).map(hotelInfo => {
+              return this.renderListElement(hotelInfo);
+            })}
+          </div>
+        );
+      })
+    );
+  };
+
+  render() {
+    return (
+      <div>
+        {this.renderListHeader()}
+        {this.renderHotels()}
+      </div>
+    );
+  }
+}
+
+List.propTypes = {
+  onChange: PropTypes.func,
+  hotels: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      name: PropTypes.string,
+      region: PropTypes.string,
+      price: PropTypes.string
+    })
+  )
+};
+
+export default List;
