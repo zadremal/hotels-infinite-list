@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { debounce } from "debounce";
 import axios from "axios";
 
 import getHotelsData from "../../mocks/hotelsDataMock";
 import mockAPIRequest from "../../mocks/apiMock";
-import styles from "./list.module.scss";
 import { Spin } from "antd";
+
+import styles from "./list.module.scss";
 
 const getHotelsEndpoint = process.env.REACT_APP_API_GET_HOTELS;
 const hotelsMockData = getHotelsData();
@@ -27,11 +29,11 @@ class HotelsList extends Component {
 
   componentDidMount() {
     this.getHotelsData();
-    window.addEventListener("scroll", () => this.onDocumentScroll());
+    window.addEventListener("scroll", debounce(this.onDocumentScroll, 100));
   }
 
   componentWillUnmount() {
-    window.removeEventListener("scroll", () => this.onDocumentScroll());
+    window.removeEventListener("scroll", debounce(this.onDocumentScroll, 100));
   }
 
   componentDidUpdate(prevProps) {
