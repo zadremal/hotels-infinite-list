@@ -11,7 +11,7 @@ const getHotelsEndpoint = process.env.REACT_APP_API_GET_HOTELS;
 const hotelsMockData = getHotelsData();
 mockAPIRequest(getHotelsEndpoint, hotelsMockData);
 
-class List extends Component {
+class HotelsList extends Component {
   state = {
     hotels: [],
     isFetching: false,
@@ -34,21 +34,42 @@ class List extends Component {
     window.removeEventListener("scroll", () => this.onDocumentScroll());
   }
 
+  componentDidUpdate(prevProps) {
+    this.props.filter !== prevProps.filter &&
+      this.setState(
+        {
+          nextHotelIndex: 0,
+          hotels: [],
+          total: 0
+        },
+        () => this.getHotelsData()
+      );
+  }
+
   getHotelsData = () => {
     this.setState({ isFetching: true }, () => {
       axios
         .get(getHotelsEndpoint, {
-          params: { start: this.state.nextHotelIndex, size: 10 }
+          params: {
+            start: this.state.nextHotelIndex,
+            size: 10,
+            filter: this.props.filter
+          }
         })
         .then(response => response.status === 200 && response.data)
         .catch(err => this.setState({ isFetching: false }))
         .then(data =>
-          this.setState(prevState => ({
-            hotels: [...prevState.hotels, ...data.hotels],
-            nextHotelIndex: data.nextHotelIndex,
-            isFetching: false,
-            total: data.total
-          }))
+          this.setState(
+            prevState => ({
+              hotels: [...prevState.hotels, ...data.hotels],
+              nextHotelIndex: data.nextHotelIndex,
+              isFetching: false,
+              total: data.total
+            }),
+            () => {
+              this.props.onChange(this.state.hotels);
+            }
+          )
         );
     });
   };
@@ -76,7 +97,7 @@ class List extends Component {
 
   renderFetchedAmount = () => {
     return (
-      this.state.total && (
+      !!this.state.total && (
         <div className={styles.totalAmount}>
           show: {this.state.hotels.length} / {this.state.total}
         </div>
@@ -126,16 +147,13 @@ class List extends Component {
   }
 }
 
-List.propTypes = {
-  onChange: PropTypes.func,
-  hotels: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      name: PropTypes.string,
-      region: PropTypes.string,
-      price: PropTypes.string
-    })
-  )
+HotelsList.defaultProps = {
+  filter: ""
 };
 
-export default List;
+HotelsList.propTypes = {
+  onChange: PropTypes.func,
+  filter: PropTypes.string
+};
+
+export default HotelsList;

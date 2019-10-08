@@ -5,34 +5,31 @@ import "antd/dist/antd.css";
 import styles from "./regionSelect.module.scss";
 const { Option } = Select;
 
-const values = ["Saint-Petersburg", "Moscow", "Berlin", "Stockholm"];
+const RegionSelect = props => {
+  return (
+    <div>
+      <Select
+        className={styles.select}
+        placeholder="Please select region"
+        allowClear
+        onChange={props.onChange}
+        showSearch
+      >
+        {props.regions.map(value => {
+          return (
+            <Option value={value} key={value}>
+              {value}
+            </Option>
+          );
+        })}
+      </Select>
+    </div>
+  );
+};
 
-export default class RegionSelect extends Component {
-  static propTypes = {
-    prop: PropTypes
-  };
+RegionSelect.propTypes = {
+  onChange: PropTypes.func,
+  regions: PropTypes.arrayOf(PropTypes.string)
+};
 
-  onFilterChange = e => {};
-
-  render() {
-    return (
-      <div>
-        <Select
-          className={styles.select}
-          placeholder="Please select location"
-          allowClear
-          onChange={this.onFilterChange}
-          showSearch
-        >
-          {values.map(value => {
-            return (
-              <Option value={value} key={value}>
-                {value}
-              </Option>
-            );
-          })}
-        </Select>
-      </div>
-    );
-  }
-}
+export default RegionSelect;
