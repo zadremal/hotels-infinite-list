@@ -12,7 +12,10 @@ mockAPIRequest(getHotelsEndpoint, hotelsMockData);
 
 class List extends Component {
   state = {
-    hotels: ""
+    hotels: [],
+    isFetching: false,
+    nextHotelIndex: 0,
+    total: null
   };
 
   renderListElement = element => (
@@ -22,16 +25,66 @@ class List extends Component {
   );
 
   componentDidMount() {
-    axios
-      .get(getHotelsEndpoint, { params: { first: 0, size: 10 } })
-      .then(response => response.status === 200 && response.data)
-      .then(data => this.setState({ hotels: data.hotels }));
+    this.getHotelsData();
+    window.addEventListener("scroll", () => this.onDocumentScroll());
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", () => this.onDocumentScroll());
+  }
+
+  getHotelsData = () => {
+    this.setState({ isFetching: true }, () => {
+      axios
+        .get(getHotelsEndpoint, {
+          params: { start: this.state.nextHotelIndex, size: 10 }
+        })
+        .then(response => response.status === 200 && response.data)
+        .catch(err => this.setState({ isFetching: false }))
+        .then(data =>
+          this.setState(prevState => ({
+            hotels: [...prevState.hotels, ...data.hotels],
+            nextHotelIndex: data.nextHotelIndex,
+            isFetching: false,
+            total: data.total
+          }))
+        );
+    });
+  };
+
+  onDocumentScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop ===
+      document.documentElement.scrollHeight
+    ) {
+      this.state.nextHotelIndex !== null &&
+        !this.state.isFetching &&
+        this.getHotelsData();
+    }
+  };
+
+  renderFetchingIndicator = () => {
+    return <div>{this.state.isFetching && <span> Loading </span>}</div>;
+  };
+
+  renderFetchedAmount = () => {
+    return (
+      this.state.total && (
+        <span>
+          {this.state.hotels.length} / {this.state.total}
+        </span>
+      )
+    );
+  };
 
   renderListHeader = () => {
     return (
       <div className={styles.header}>
-        {Object.keys(this.state.hotels && this.state.hotels[0]).map(title => {
+        {Object.keys(
+          this.state.hotels &&
+            !!this.state.hotels.length &&
+            this.state.hotels[0]
+        ).map(title => {
           return this.renderListElement(title);
         })}
       </div>
@@ -41,6 +94,7 @@ class List extends Component {
   renderHotels = () => {
     return (
       this.state.hotels &&
+      !!this.state.hotels.length &&
       this.state.hotels.map(hotel => {
         return (
           <div className={styles.hotel} spacing={0} key={hotel.id}>
@@ -58,6 +112,8 @@ class List extends Component {
       <div>
         {this.renderListHeader()}
         {this.renderHotels()}
+        {this.renderFetchingIndicator()}
+        {this.renderFetchedAmount()}
       </div>
     );
   }

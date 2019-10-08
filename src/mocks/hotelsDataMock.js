@@ -17,9 +17,9 @@ const getRegion = () => {
 
 const getHotelsData = () => {
   let data = [];
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 50; i) {
     data.push({
-      id: faker.random.number(),
+      id: ++i,
       name: faker.company.companyName(),
       region: getRegion(),
       price: faker.commerce.price()
