@@ -1,0 +1,42 @@
+.header {
+  display: flex;
+  background: #092a5e;
+  color: white;
+  font-size: 1.2em;
+  text-transform: uppercase;
+}
+
+.hotel {
+  display: flex;
+  &:nth-child(2n + 1) {
+    background-color: #eee;
+  }
+}
+
+.listElement {
+  flex-basis: 25%;
+  padding: 20px;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  &:last-child {
+    border: none;
+  }
+}
+
+.status {
+  padding: 16px 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.totalAmount {
+  text-align: right;
+  padding: 8px 0;
+}
+
+.fetchingIndicator {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 24px;
+}
