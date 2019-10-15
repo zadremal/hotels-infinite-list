@@ -10,7 +10,7 @@ class App extends React.Component {
     filter: ""
   };
 
-  onHotelsUpdate = hotels => {
+  onHotelsListChange = hotels => {
     const uniqueRegions = new Set(hotels.map(hotel => hotel.region));
     this.setState({
       regions: Array.from(uniqueRegions)
@@ -33,8 +33,8 @@ class App extends React.Component {
             onChange={this.onRegionChange}
           />
           <HotelsList
-            onChange={this.onHotelsUpdate}
             filter={this.state.filter}
+            onChange={this.onHotelsListChange}
           />
         </div>
       </div>

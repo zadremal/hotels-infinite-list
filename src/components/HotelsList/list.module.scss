@@ -8,9 +8,11 @@
 
 .hotel {
   display: flex;
+
   &:nth-child(2n + 1) {
     background-color: #eee;
   }
+
   &:last-child {
     border-bottom: 1px solid #ddd;
   }
@@ -19,23 +21,24 @@
 .listElement {
   flex-basis: 25%;
   padding: 20px;
-  text-align: center;
   border-right: 1px solid #ddd;
+  text-align: center;
+
   &:last-child {
     border: none;
   }
 }
 
 .status {
-  padding: 16px 0;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  padding: 16px 0;
 }
 
-.totalAmount {
-  text-align: right;
+.totalHotelsCount {
   padding: 8px 0;
+  text-align: right;
 }
 
 .fetchingIndicator {

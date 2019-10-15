@@ -3,32 +3,26 @@ import PropTypes from "prop-types";
 import { debounce } from "debounce";
 import axios from "axios";
 
-import getHotelsData from "../../mocks/hotelsDataMock";
+import getHotelsMockData from "../../mocks/hotelsMockData";
 import mockAPIRequest from "../../mocks/apiMock";
 import { Spin } from "antd";
 
 import styles from "./list.module.scss";
 
 const getHotelsEndpoint = process.env.REACT_APP_API_GET_HOTELS;
-const hotelsMockData = getHotelsData();
+const hotelsMockData = getHotelsMockData();
 mockAPIRequest(getHotelsEndpoint, hotelsMockData);
 
 class HotelsList extends Component {
   state = {
-    hotels: [],
+    hotelsList: [],
     isFetching: false,
     nextHotelIndex: 0,
-    total: null
+    totalHotelsCount: null
   };
 
-  renderListElement = element => (
-    <div className={styles.listElement} key={element}>
-      {element}
-    </div>
-  );
-
   componentDidMount() {
-    this.getHotelsData();
+    this.updateHotelsList();
     window.addEventListener("scroll", debounce(this.onDocumentScroll, 100));
   }
 
@@ -38,44 +32,36 @@ class HotelsList extends Component {
 
   componentDidUpdate(prevProps) {
     this.props.filter !== prevProps.filter &&
-      this.setState(
-        {
-          nextHotelIndex: 0,
-          total: 0
-        },
-        () => this.getHotelsData()
-      );
+      this.updateHotelsList([], this.props.filter, 0);
   }
 
-  getHotelsData = () => {
-    this.setState({ isFetching: true }, () => {
-      axios
-        .get(getHotelsEndpoint, {
-          params: {
-            start: this.state.nextHotelIndex,
-            size: 10,
-            filter: this.props.filter
-          }
-        })
-        .then(response => response.status === 200 && response.data)
-        .catch(err => this.setState({ isFetching: false }))
-        .then(data =>
-          this.setState(
-            prevState => ({
-              hotels:
-                prevState.nextHotelIndex === 0
-                  ? data.hotels
-                  : [...prevState.hotels, ...data.hotels],
-              nextHotelIndex: data.nextHotelIndex,
-              isFetching: false,
-              total: data.total
-            }),
-            () => {
-              this.props.onChange(this.state.hotels);
-            }
-          )
-        );
+  getHotelsData = async (start, filter, size = 10) => {
+    const response = await axios.get(getHotelsEndpoint, {
+      params: {
+        start: start,
+        filter: filter,
+        size: size
+      }
     });
+
+    return response.data;
+  };
+
+  updateHotelsList = async (
+    currentHotels = [],
+    filter,
+    lastFetchedIndex = 0
+  ) => {
+    const hotelsData = await this.getHotelsData(lastFetchedIndex, filter);
+
+    const { hotels, nextHotelIndex, totalHotelsCount } = hotelsData;
+    const hotelsList = [...currentHotels, ...hotels];
+    this.setState({
+      hotelsList: hotelsList,
+      nextHotelIndex: nextHotelIndex,
+      totalHotelsCount: totalHotelsCount
+    });
+    this.props.onChange(hotelsList);
   };
 
   onDocumentScroll = () => {
@@ -84,8 +70,11 @@ class HotelsList extends Component {
       document.documentElement.scrollHeight
     ) {
       this.state.nextHotelIndex !== null &&
-        !this.state.isFetching &&
-        this.getHotelsData();
+        this.updateHotelsList(
+          this.state.hotelsList,
+          this.props.filter,
+          this.state.nextHotelIndex
+        );
     }
   };
 
@@ -101,9 +90,9 @@ class HotelsList extends Component {
 
   renderFetchedAmount = () => {
     return (
-      !!this.state.total && (
-        <div className={styles.totalAmount}>
-          show: {this.state.hotels.length} / {this.state.total}
+      !!this.state.totalHotelsCount && (
+        <div className={styles.totalHotelsCount}>
+          show: {this.state.hotelsList.length} / {this.state.totalHotelsCount}
         </div>
       )
     );
@@ -112,41 +101,41 @@ class HotelsList extends Component {
   renderListHeader = () => {
     return (
       <div className={styles.header}>
-        {Object.keys(
-          this.state.hotels &&
-            !!this.state.hotels.length &&
-            this.state.hotels[0]
-        ).map(title => {
+        {Object.keys(this.state.hotelsList[0]).map(title => {
           return this.renderListElement(title);
         })}
       </div>
     );
   };
 
+  renderListElement = element => (
+    <div className={styles.listElement} key={element}>
+      {element}
+    </div>
+  );
+
   renderHotels = () => {
-    return (
-      this.state.hotels &&
-      !!this.state.hotels.length &&
-      this.state.hotels.map(hotel => {
-        return (
-          <div className={styles.hotel} spacing={0} key={hotel.id}>
-            {Object.values(hotel).map(hotelInfo => {
-              return this.renderListElement(hotelInfo);
-            })}
-          </div>
-        );
-      })
-    );
+    return this.state.hotelsList.map(hotel => {
+      return (
+        <div className={styles.hotel} key={hotel.id}>
+          {Object.values(hotel).map(hotelInfo => {
+            return this.renderListElement(hotelInfo);
+          })}
+        </div>
+      );
+    });
   };
 
   render() {
     return (
-      <div>
-        {this.renderListHeader()}
-        {this.renderHotels()}
-        {this.renderFetchedAmount()}
-        {this.renderFetchingIndicator()}
-      </div>
+      this.state.hotelsList.length > 0 && (
+        <div>
+          {this.renderListHeader()}
+          {this.renderHotels()}
+          {this.renderFetchedAmount()}
+          {this.renderFetchingIndicator()}
+        </div>
+      )
     );
   }
 }

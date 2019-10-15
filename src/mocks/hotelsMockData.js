@@ -15,7 +15,7 @@ const getRegion = () => {
   return cities[randomIndex];
 };
 
-const getHotelsData = () => {
+const getHotelsMockData = () => {
   let data = [];
   for (let i = 0; i < 100; i) {
     data.push({
@@ -28,4 +28,4 @@ const getHotelsData = () => {
   return data;
 };
 
-export default getHotelsData;
+export default getHotelsMockData;

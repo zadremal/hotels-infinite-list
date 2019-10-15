@@ -9,18 +9,18 @@ const mockAPIRequest = (endpoint, mockData) => {
     const hotelsList = filter
       ? mockData.filter(hotel => hotel.region === filter)
       : [...mockData];
-    const hotelsQuantity = hotelsList.length;
+    const hotelsCount = hotelsList.length;
     const lastHotelIndex = start + size;
     const hotels = hotelsList.slice(start, lastHotelIndex);
 
-    const nextIndex = lastHotelIndex < hotelsQuantity ? lastHotelIndex : null;
+    const nextIndex = lastHotelIndex < hotelsCount ? lastHotelIndex : null;
 
     return [
       200,
       JSON.stringify({
         hotels: hotels,
         nextHotelIndex: nextIndex,
-        total: hotelsQuantity
+        totalHotelsCount: hotelsCount
       })
     ];
   });
