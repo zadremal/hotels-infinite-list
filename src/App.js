@@ -5,10 +5,14 @@ import HotelsList from "./components/HotelsList";
 import RegionSelect from "./components/RegionSelect";
 
 class App extends React.Component {
-  state = {
-    regions: [],
-    filter: ""
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      regions: [],
+      filter: ""
+    };
+  }
 
   onHotelsListChange = hotels => {
     const uniqueRegions = new Set(hotels.map(hotel => hotel.region));
@@ -24,18 +28,13 @@ class App extends React.Component {
   };
 
   render() {
+    const { filter, regions } = this.state;
     return (
       <div className={styles.app}>
         <h2 className={styles.mainHeader}> Demo list container </h2>
         <div>
-          <RegionSelect
-            regions={this.state.regions}
-            onChange={this.onRegionChange}
-          />
-          <HotelsList
-            filter={this.state.filter}
-            onChange={this.onHotelsListChange}
-          />
+          <RegionSelect regions={regions} onChange={this.onRegionChange} />
+          <HotelsList filter={filter} onChange={this.onHotelsListChange} />
         </div>
       </div>
     );

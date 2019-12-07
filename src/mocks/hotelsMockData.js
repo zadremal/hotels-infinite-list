@@ -16,10 +16,10 @@ const getRegion = () => {
 };
 
 const getHotelsMockData = () => {
-  let data = [];
-  for (let i = 0; i < 100; i) {
+  const data = [];
+  for (let i = 0; i < 100; i++) {
     data.push({
-      id: ++i,
+      id: i + 1,
       name: faker.company.companyName(),
       region: getRegion(),
       price: faker.commerce.price()

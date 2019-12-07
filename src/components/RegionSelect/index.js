@@ -8,6 +8,7 @@ import styles from "./regionSelect.module.scss";
 const { Option } = Select;
 
 const RegionSelect = props => {
+  const { regions, onChange } = props;
   return (
     <div>
       <Select
@@ -15,9 +16,8 @@ const RegionSelect = props => {
         showSearch
         className={styles.select}
         placeholder="Please select region"
-        onChange={props.onChange}
-      >
-        {props.regions.map(value => {
+        onChange={onChange}>
+        {regions.map(value => {
           return (
             <Option value={value} key={value}>
               {value}
@@ -27,6 +27,11 @@ const RegionSelect = props => {
       </Select>
     </div>
   );
+};
+
+RegionSelect.defaultProps = {
+  onChange: () => {},
+  regions: []
 };
 
 RegionSelect.propTypes = {
