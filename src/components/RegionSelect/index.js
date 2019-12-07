@@ -1,21 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Select } from "antd";
+
 import "antd/dist/antd.css";
 import styles from "./regionSelect.module.scss";
+
 const { Option } = Select;
 
 const RegionSelect = props => {
+  const { regions, onChange } = props;
   return (
     <div>
       <Select
+        allowClear
+        showSearch
         className={styles.select}
         placeholder="Please select region"
-        allowClear
-        onChange={props.onChange}
-        showSearch
-      >
-        {props.regions.map(value => {
+        onChange={onChange}>
+        {regions.map(value => {
           return (
             <Option value={value} key={value}>
               {value}
@@ -25,6 +27,11 @@ const RegionSelect = props => {
       </Select>
     </div>
   );
+};
+
+RegionSelect.defaultProps = {
+  onChange: () => {},
+  regions: []
 };
 
 RegionSelect.propTypes = {
